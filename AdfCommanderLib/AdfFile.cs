@@ -15,14 +15,15 @@ namespace AdfCommanderLib
 
         private byte[] _bytMain = new byte[901120];
         private byte[] _bytCompare = new byte[901120];
-        #endregion  
+        #endregion
 
         #region ***** constructor / terminator / disposer
         public AdfFile()
         {
 
         }
-        public AdfFile(string fileName) : this()
+        public AdfFile(string fileName)
+            : this()
         {
             _strFilename = fileName;
             _initAdfFile();
@@ -32,6 +33,8 @@ namespace AdfCommanderLib
         #region ***** private functions
         private void _initAdfFile()
         {
+            FileLoaded = false;
+
             //check prerequisites
             if (!File.Exists(_strFilename))
             {
@@ -50,6 +53,8 @@ namespace AdfCommanderLib
                     fsSource.Seek(0, SeekOrigin.Begin);
                     fsSource.Read(_bytCompare, 0, 901120);
                     fsSource.Close();
+
+                    FileLoaded = true;
                 }
             }
             catch (Exception e)
@@ -67,17 +72,31 @@ namespace AdfCommanderLib
 
             return bytSector;
         }
+
+        private byte[] _getSectors(int startSector, int sectorCount)
+        {
+            var bytSector = new byte[sectorCount * 512];
+
+            Buffer.BlockCopy(_bytMain, startSector * 512, bytSector, 0, sectorCount * 512);
+
+            return bytSector;
+        }
         #endregion
 
         #region ***** methods
-
         public byte[] GetSector(int sectorNumber)
         {
             return _getSector(sectorNumber);
         }
+
+        public byte[] GetSectors(int startSector, int count)
+        {
+            return _getSectors(startSector, count);
+        }
         #endregion
 
         #region ***** properties
+        public bool FileLoaded { get; private set; }
         #endregion
     }
 }
