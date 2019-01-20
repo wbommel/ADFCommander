@@ -54,20 +54,32 @@ namespace AdfCommanderLib
         #endregion
 
         #region ***** properties
-        public string TextLineFormat { get; set; } = "{0,-25} {1,8} {2,8} {3,8} {4,5}"
-        
-        public byte[] Entry { get; set; }
-        public string FileName { get; set; }
-        public uint Size { get; set; }
-        public uint Position { get; set; }
-        public uint Unknown1 { get; set; }
-        public uint Unknown2 { get; set; }
+        public string TextLineFormat { get; set; } = "{0,-25} {1,8} {2,8} {3,8} {4,5}";
+
+        public byte[] Entry { get; private set; }
+        public string FileName { get; private set; }
+        public uint Size { get; private set; }
+        public uint Position { get; private set; }
+        public uint Unknown1 { get; private set; }
+        public uint Unknown2 { get; private set; }
         #endregion
 
         #region ***** methods
         public string GetTextLine()
         {
+            return string.Format(TextLineFormat, FileName, Size, Position, Unknown1, Unknown2);
+        }
 
+        public string GetHexLine()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i <= Entry.GetUpperBound(0); i++)
+            {
+                if (i == 44) { }
+                sb.Append(Entry[i].ToString("X2"));
+                sb.Append(" ");
+            }
+            return sb.ToString();
         }
         #endregion
     }

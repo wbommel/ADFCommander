@@ -55,9 +55,7 @@ namespace AdfCommanderLib
             var bytDir = _adfFile.GetSectors(0, 10);
             var intStartOfDirectory = 42;
             var intEntrySize = 46;
-            StringBuilder sbHex = new StringBuilder();
             StringBuilder sbText = new StringBuilder();
-            string strDirFormat = "{0,-25} {1,8} {2,8} {3,8} {4,5}";
 
             //read directory
             int idx = intStartOfDirectory; //first directory entry
@@ -67,42 +65,24 @@ namespace AdfCommanderLib
                 byte[] bytEntry = new byte[intEntrySize];
                 Buffer.BlockCopy(bytDir, idx, bytEntry, 0, intEntrySize);
 
-                //create hex representation
-                for (int i = 0; i <= bytEntry.GetUpperBound(0); i++)
+                if(HlsDosDirEntry.TryParse(bytEntry, out var hdde))
                 {
-                    if (i == 44) { }
-                    sbHex.Append(bytEntry[i].ToString("X2"));
-                    sbHex.Append(" ");
+                    //output to trace
+                    Trace.WriteLine(hdde.GetHexLine());
+
+                    //collect dir entries
+                    sbText.Append(hdde.GetTextLine());
+                    sbText.Append(Environment.NewLine);
                 }
-                sbHex.Append(Environment.NewLine);
-
-                //create text representation
-                //Console.WriteLine(System.Text.Encoding.ASCII.GetString(bytEntry));
-                sbText.Append(string.Format(strDirFormat,
-                    Encoding.ASCII.GetString(bytEntry).Substring(0, Encoding.ASCII.GetString(bytEntry).IndexOf((char)0)),
-                    _swapEndianness(BitConverter.ToUInt32(bytEntry, 32)),
-                    _swapEndianness(BitConverter.ToUInt32(bytEntry, 36)),
-                    _swapEndianness(BitConverter.ToUInt32(bytEntry, 40)),
-                    _swapEndianness(BitConverter.ToUInt16(bytEntry, 44))));
-                sbText.Append(Environment.NewLine);
-
-                //output to trace
-                Trace.WriteLine(sbHex.ToString());
-                Trace.WriteLine(sbText.ToString());
 
                 //goto next entry
                 idx += intEntrySize;
             }
 
-            return sbText.ToString();
-        }
+            //output to trace
+            Trace.WriteLine(sbText.ToString());
 
-        private uint _swapEndianness(uint x)
-        {
-            return ((x & 0x000000ff) << 24) +  // First byte
-                   ((x & 0x0000ff00) << 8) +   // Second byte
-                   ((x & 0x00ff0000) >> 8) +   // Third byte
-                   ((x & 0xff000000) >> 24);   // Fourth byte
+            return sbText.ToString();
         }
         #endregion
 
