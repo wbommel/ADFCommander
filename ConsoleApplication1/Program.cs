@@ -31,6 +31,7 @@ namespace ConsoleApplication1
             }
 
 
+            Console.Write("press any key to end.");
             Console.ReadKey();
         }
     }
