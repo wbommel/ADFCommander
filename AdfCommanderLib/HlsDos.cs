@@ -57,6 +57,7 @@ namespace AdfCommanderLib
             var intEntrySize = 46;
             StringBuilder sbHex = new StringBuilder();
             StringBuilder sbText = new StringBuilder();
+            string strDirFormat = "{0,-25} {1,8} {2,8} {3,8} {4,5}";
 
             //read directory
             int idx = intStartOfDirectory; //first directory entry
@@ -77,7 +78,12 @@ namespace AdfCommanderLib
 
                 //create text representation
                 //Console.WriteLine(System.Text.Encoding.ASCII.GetString(bytEntry));
-                sbText.Append(Encoding.ASCII.GetString(bytEntry).Substring(0, Encoding.ASCII.GetString(bytEntry).IndexOf((char)0)));
+                sbText.Append(string.Format(strDirFormat,
+                    Encoding.ASCII.GetString(bytEntry).Substring(0, Encoding.ASCII.GetString(bytEntry).IndexOf((char)0)),
+                    _swapEndianness(BitConverter.ToUInt32(bytEntry, 32)),
+                    _swapEndianness(BitConverter.ToUInt32(bytEntry, 36)),
+                    _swapEndianness(BitConverter.ToUInt32(bytEntry, 40)),
+                    _swapEndianness(BitConverter.ToUInt16(bytEntry, 44))));
                 sbText.Append(Environment.NewLine);
 
                 //output to trace
@@ -88,7 +94,7 @@ namespace AdfCommanderLib
                 idx += intEntrySize;
             }
 
-            return sbHex.ToString();
+            return sbText.ToString();
         }
 
         private uint _swapEndianness(uint x)
