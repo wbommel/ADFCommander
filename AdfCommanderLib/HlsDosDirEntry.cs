@@ -16,10 +16,10 @@ namespace AdfCommanderLib
                 hdde = new HlsDosDirEntry(
                     entry,
                     Encoding.ASCII.GetString(entry).Substring(0, Encoding.ASCII.GetString(entry).IndexOf((char)0)),
-                    SwapEndianness(BitConverter.ToUInt32(entry, 32)),
-                    SwapEndianness(BitConverter.ToUInt32(entry, 36)),
-                    SwapEndianness(BitConverter.ToUInt32(entry, 40)),
-                    SwapEndianness(BitConverter.ToUInt16(entry, 44)));
+                    SwapEndianness32bit(BitConverter.ToUInt32(entry, 32)),
+                    SwapEndianness32bit(BitConverter.ToUInt32(entry, 36)),
+                    SwapEndianness32bit(BitConverter.ToUInt32(entry, 40)),
+                    SwapEndianness16bit(BitConverter.ToUInt16(entry, 44)));
                 return true;
             }
             catch
@@ -29,7 +29,13 @@ namespace AdfCommanderLib
             }
         }
 
-        public static uint SwapEndianness(uint x)
+        public static uint SwapEndianness16bit(uint x)
+        {
+            return ((x & 0x00ff) << 8) +   // First byte
+                   ((x & 0xff00) >> 8);    // Second byte
+        }
+
+        public static uint SwapEndianness32bit(uint x)
         {
             return ((x & 0x000000ff) << 24) +  // First byte
                    ((x & 0x0000ff00) << 8) +   // Second byte
