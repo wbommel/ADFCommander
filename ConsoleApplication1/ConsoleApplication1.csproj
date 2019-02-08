@@ -47,6 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="HDExampleDisk.adf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="HLS_NHL_2018_2019 - Kopie.adf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

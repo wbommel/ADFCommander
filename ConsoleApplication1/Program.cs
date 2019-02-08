@@ -15,6 +15,8 @@ namespace ConsoleApplication1
 
             Console.WriteLine(t.GetDirectory());
 
+            var t2 = new HlsDos(new AdfFile(@"HDExampleDisk.adf"));
+
 
 
             Console.Write("press any key to end.");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
@@ -45,6 +46,9 @@ namespace AdfCommanderLib
             {
                 using (var fsSource = new FileStream(_strFilename, FileMode.Open, FileAccess.Read))
                 {
+#if DEBUG
+                    Debug.WriteLine(string.Format("Filename (bytes): {0} ({1})",_strFilename, fsSource.Length));
+#endif
                     //not the right size
                     if (fsSource.Length != 901120) { return; }
 
