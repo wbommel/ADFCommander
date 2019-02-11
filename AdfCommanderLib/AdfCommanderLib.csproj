@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdfFile.cs" />
+    <Compile Include="AmigaDos.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="HlsDos.cs" />
     <Compile Include="HlsDosDirEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -14,8 +14,8 @@ namespace AdfCommanderLib
         #region ***** declarations
         private string _strFilename = string.Empty;
 
-        private byte[] _bytMain = new byte[901120];
-        private byte[] _bytCompare = new byte[901120];
+        private byte[] _bytMain;
+        private byte[] _bytCompare;
         #endregion
 
         #region ***** constructor / terminator / disposer
@@ -34,28 +34,39 @@ namespace AdfCommanderLib
         #region ***** private functions
         private void _initAdfFile()
         {
-            FileLoaded = false;
-
-            //check prerequisites
-            if (!File.Exists(_strFilename))
-            {
-                return;
-            }
+            //prerequisites
+            if (FileLoaded) { FileLoaded = false; }
+            if (!File.Exists(_strFilename)) { throw new FileNotFoundException(_strFilename); }
 
             try
             {
                 using (var fsSource = new FileStream(_strFilename, FileMode.Open, FileAccess.Read))
                 {
+                    //vars
+                    int fileLength = (int)fsSource.Length;
+
+                    //verify file length
+                    if (fileLength % Blocksize != 0)
+                    {
+                        throw new InvalidDataException(string.Format("Invalid block size to file size ratio (bs:{0}, fs:{1}).", Blocksize, fileLength));
+                    }
 #if DEBUG
-                    Debug.WriteLine(string.Format("Filename (bytes): {0} ({1})",_strFilename, fsSource.Length));
+                    Debug.WriteLine(string.Format("Filename (bytes): {0} ({1})", _strFilename, fileLength));
 #endif
-                    //not the right size
-                    if (fsSource.Length != 901120) { return; }
+                    //init arrays
+                    if (_bytMain != null) { _bytMain = null; }
+                    if (_bytCompare != null) { _bytCompare = null; }
+                    _bytMain = new byte[fileLength];
+                    _bytCompare = new byte[fileLength];
+
+                    //check for known disk sizes
+                    if (fileLength == 1760 * Blocksize) { FileDiskType = DiskType.DoubleDensity_DD; }
+                    if (fileLength == 3520 * Blocksize) { FileDiskType = DiskType.HighDensity_HD; }
 
                     //read file to buffers
-                    fsSource.Read(_bytMain, 0, 901120);
+                    fsSource.Read(_bytMain, 0, fileLength);
                     fsSource.Seek(0, SeekOrigin.Begin);
-                    fsSource.Read(_bytCompare, 0, 901120);
+                    fsSource.Read(_bytCompare, 0, fileLength);
                     fsSource.Close();
 
                     FileLoaded = true;
@@ -70,18 +81,18 @@ namespace AdfCommanderLib
 
         private byte[] _getSector(int sectorNumber)
         {
-            var bytSector = new byte[512];
+            var bytSector = new byte[Blocksize];
 
-            Buffer.BlockCopy(_bytMain, sectorNumber * 512, bytSector, 0, 512);
+            Buffer.BlockCopy(_bytMain, sectorNumber * Blocksize, bytSector, 0, Blocksize);
 
             return bytSector;
         }
 
         private byte[] _getSectors(int startSector, int sectorCount)
         {
-            var bytSector = new byte[sectorCount * 512];
+            var bytSector = new byte[sectorCount * Blocksize];
 
-            Buffer.BlockCopy(_bytMain, startSector * 512, bytSector, 0, sectorCount * 512);
+            Buffer.BlockCopy(_bytMain, startSector * Blocksize, bytSector, 0, sectorCount * Blocksize);
 
             return bytSector;
         }
@@ -100,7 +111,11 @@ namespace AdfCommanderLib
         #endregion
 
         #region ***** properties
-        public bool FileLoaded { get; private set; }
+        public int Blocksize { get; private set; } = 512;
+
+        public bool FileLoaded { get; private set; } = false;
+
+        public DiskType FileDiskType { get; private set; } = DiskType.Unknown;
         #endregion
     }
 }
