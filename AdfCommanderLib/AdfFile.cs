@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdfCommanderLib
 {
     public class AdfFile
     {
         #region ***** declarations
-        private string _strFilename = string.Empty;
-
         private byte[] _bytMain;
         private byte[] _bytCompare;
         #endregion
@@ -26,7 +19,7 @@ namespace AdfCommanderLib
         public AdfFile(string fileName)
             : this()
         {
-            _strFilename = fileName;
+            FileName = fileName;
             _initAdfFile();
         }
         #endregion
@@ -36,11 +29,11 @@ namespace AdfCommanderLib
         {
             //prerequisites
             if (FileLoaded) { FileLoaded = false; }
-            if (!File.Exists(_strFilename)) { throw new FileNotFoundException(_strFilename); }
+            if (!File.Exists(FileName)) { throw new FileNotFoundException(FileName); }
 
             try
             {
-                using (var fsSource = new FileStream(_strFilename, FileMode.Open, FileAccess.Read))
+                using (var fsSource = new FileStream(FileName, FileMode.Open, FileAccess.Read))
                 {
                     //vars
                     int fileLength = (int)fsSource.Length;
@@ -51,7 +44,7 @@ namespace AdfCommanderLib
                         throw new InvalidDataException(string.Format("Invalid block size to file size ratio (bs:{0}, fs:{1}).", Blocksize, fileLength));
                     }
 #if DEBUG
-                    Debug.WriteLine(string.Format("Filename (bytes): {0} ({1})", _strFilename, fileLength));
+                    Debug.WriteLine(string.Format("Filename (bytes): {0} ({1})", FileName, fileLength));
 #endif
                     //init arrays
                     if (_bytMain != null) { _bytMain = null; }
@@ -114,6 +107,8 @@ namespace AdfCommanderLib
         public int Blocksize { get; private set; } = 512;
 
         public bool FileLoaded { get; private set; } = false;
+        
+        public string FileName { get; private set; } = string.Empty;
 
         public DiskType FileDiskType { get; private set; } = DiskType.Unknown;
         #endregion

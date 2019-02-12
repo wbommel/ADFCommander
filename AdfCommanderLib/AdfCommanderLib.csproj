@@ -43,7 +43,9 @@
   <ItemGroup>
     <Compile Include="AdfFile.cs" />
     <Compile Include="AmigaDos.cs" />
+    <Compile Include="AmigaDosBootBlock.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="HlsDos.cs" />
     <Compile Include="HlsDosDirEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

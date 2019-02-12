@@ -18,6 +18,9 @@ namespace ConsoleApplication1
             var t2 = new HlsDos(new AdfFile(@"HDExampleDisk.adf"));
 
 
+            var z1 = new AmigaDos(new AdfFile(@"HDExampleDisk.adf"));
+
+
 
             Console.Write("press any key to end.");
             Console.ReadKey();

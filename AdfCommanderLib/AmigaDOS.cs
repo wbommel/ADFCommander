@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace AdfCommanderLib
 {
@@ -20,6 +17,8 @@ namespace AdfCommanderLib
             if (!adfFile.FileLoaded) { throw new ArgumentException("No adf file loaded."); }
 
             _adfFile = adfFile;
+
+            _analyzeBootBlock();
         }
 
         #region dispose pattern (http://www.codeproject.com/Articles/15360/Implementing-IDisposable-and-the-Dispose-Pattern-P)
@@ -33,6 +32,7 @@ namespace AdfCommanderLib
                 if (disposing)
                 {
                     // clean up managed handles here
+                    _adfFile = null;
                 }
 
                 _disposed = true;
@@ -47,49 +47,23 @@ namespace AdfCommanderLib
         #endregion
 
         #region ***** private functions
-        private string _getDirectory()
+        private void _analyzeBootBlock()
         {
-            /* The directory is contained in the first 10 sectors
-             * starting at byte 42 with an entry siz eof 46 bytes */
-            var bytDir = _adfFile.GetSectors(0, 10);
-            var intStartOfDirectory = 42;
-            var intEntrySize = 46;
-            StringBuilder sbText = new StringBuilder();
-
-            //read directory
-            int idx = intStartOfDirectory; //first directory entry
-            while (bytDir[idx] != 0)
+            byte[] bytBootBlock = _adfFile.GetSectors(0, 2);
+            using (var br = new BinaryReader(new FileStream(_adfFile.FileName, FileMode.Open, FileAccess.Read)))
             {
-                //get entry
-                byte[] bytEntry = new byte[intEntrySize];
-                Buffer.BlockCopy(bytDir, idx, bytEntry, 0, intEntrySize);
-
-                if (HlsDosDirEntry.TryParse(bytEntry, out var hdde))
-                {
-                    //output to trace
-                    Trace.WriteLine(hdde.GetHexLine());
-
-                    //collect dir entries
-                    sbText.Append(hdde.GetTextLine());
-                    sbText.Append(Environment.NewLine);
-                }
-
-                //goto next entry
-                idx += intEntrySize;
+                BootBlock bb = new BootBlock(br, _adfFile.Blocksize * 2);
             }
-
-            //output to trace
-            Trace.WriteLine(sbText.ToString());
-
-            return sbText.ToString();
         }
         #endregion
 
         #region ***** methods
-        public string GetDirectory()
-        {
-            return _getDirectory();
-        }
+        #endregion
+
+        #region ***** properties
+        public DiskType FileDiskType { get { return _adfFile.FileDiskType; } }
+
+        public AmigaDosType Type { get; private set; } = AmigaDosType.Unknown;
         #endregion
     }
 }
