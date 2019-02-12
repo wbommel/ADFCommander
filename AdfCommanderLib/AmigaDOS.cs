@@ -53,6 +53,7 @@ namespace AdfCommanderLib
             using (var br = new BinaryReader(new FileStream(_adfFile.FileName, FileMode.Open, FileAccess.Read)))
             {
                 BootBlock bb = new BootBlock(br, _adfFile.Blocksize * 2);
+                
             }
         }
         #endregion

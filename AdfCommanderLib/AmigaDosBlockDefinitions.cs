@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdfCommanderLib
 {
@@ -21,5 +17,10 @@ namespace AdfCommanderLib
             RootBlockPointer = br.ReadUInt32(Endianness.Big);
             BootCode = br.ReadBytes(size - (3 * 4), Endianness.Big);
         }
+    }
+
+    public class RootBlock
+    {
+
     }
 }
