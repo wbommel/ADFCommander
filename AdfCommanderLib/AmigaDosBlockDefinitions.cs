@@ -21,6 +21,6 @@ namespace AdfCommanderLib
 
     public class RootBlock
     {
-
+        public UInt32 PrimaryType { get; private set; }
     }
 }
