@@ -32,6 +32,16 @@ namespace AdfCommanderLib
             return BitConverter.ToUInt32(binaryReader.ReadBytes(4, endianness), 0);
         }
 
+        public static Int16 ReadInt16(this BinaryReader binaryReader, Endianness endianness)
+        {
+            return BitConverter.ToInt16(binaryReader.ReadBytes(2, endianness), 0);
+        }
+
+        public static Int32 ReadInt32(this BinaryReader binaryReader, Endianness endianness)
+        {
+            return BitConverter.ToInt32(binaryReader.ReadBytes(4, endianness), 0);
+        }
+
         public static String ReadNullTerminatedString(this BinaryReader binaryReader, Encoding encoding)
         {
             List<Byte> byteList = new List<Byte>();

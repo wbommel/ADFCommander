@@ -19,8 +19,35 @@ namespace AdfCommanderLib
         }
     }
 
+    public class BlockTypeStubb
+    {
+        public int PrimaryBlockTypeIdentifier { get; private set; }
+        public int SecondaryBlockTypeIdentifier { get; private set; }
+        public AmigaDosBlockType BlockType { get; private set; } = AmigaDosBlockType.Unknown;
+
+        public BlockTypeStubb(BinaryReader br, int positionPrimary, int positionSecondary)
+        {
+            br.BaseStream.Seek(positionPrimary, SeekOrigin.Begin);
+            PrimaryBlockTypeIdentifier = br.ReadInt32(Endianness.Big);
+            br.BaseStream.Seek(positionSecondary, SeekOrigin.Begin);
+            SecondaryBlockTypeIdentifier = br.ReadInt32(Endianness.Big);
+
+            _recognizeBlockType();
+        }
+
+        private void _recognizeBlockType()
+        {
+            if (PrimaryBlockTypeIdentifier == 2 && SecondaryBlockTypeIdentifier == 1) { BlockType = AmigaDosBlockType.RootBlock; }
+            if (PrimaryBlockTypeIdentifier == 2 && SecondaryBlockTypeIdentifier == 2) { BlockType = AmigaDosBlockType.UserDirectoryBlock; }
+            if (PrimaryBlockTypeIdentifier == 2 && SecondaryBlockTypeIdentifier == -3) { BlockType = AmigaDosBlockType.FileHeaderBlock; }
+            if (PrimaryBlockTypeIdentifier == 16 && SecondaryBlockTypeIdentifier == -3) { BlockType = AmigaDosBlockType.FileExtensionBlock; }
+            if (PrimaryBlockTypeIdentifier == 8) { BlockType = AmigaDosBlockType.DataBlock; }
+        }
+    }
+
     public class RootBlock
     {
-        public UInt32 PrimaryType { get; private set; }
+        public uint PrimaryBlockType { get; private set; }
+
     }
 }

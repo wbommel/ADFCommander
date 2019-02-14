@@ -50,7 +50,9 @@ namespace AdfCommanderLib
         private void _analyzeBootBlock()
         {
             byte[] bytBootBlock = _adfFile.GetSectors(0, 2);
-            using (var br = new BinaryReader(new FileStream(_adfFile.FileName, FileMode.Open, FileAccess.Read)))
+
+            _adfFile.FileMemoryStream.Seek(0, SeekOrigin.Begin);
+            using (var br = new BinaryReader(_adfFile.FileMemoryStream))
             {
                 BootBlock bb = new BootBlock(br, _adfFile.Blocksize * 2);
                 
@@ -64,7 +66,7 @@ namespace AdfCommanderLib
         #region ***** properties
         public DiskType FileDiskType { get { return _adfFile.FileDiskType; } }
 
-        public AmigaDosType Type { get; private set; } = AmigaDosType.Unknown;
+        public AmigaDosFileSystemType Type { get; private set; } = AmigaDosFileSystemType.Unknown;
         #endregion
     }
 }

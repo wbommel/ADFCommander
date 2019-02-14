@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AdfCommanderLib
+﻿namespace AdfCommanderLib
 {
     /// <summary>
     /// 
@@ -16,10 +10,22 @@ namespace AdfCommanderLib
         HighDensity_HD = 2,
     }
 
-    public enum AmigaDosType
+    public enum AmigaDosFileSystemType
     {
         Unknown = -1,
         OFS = 1,
         FFS = 2,
+    }
+
+    public enum AmigaDosBlockType
+    {
+        Unknown = -1,
+        RootBlock = 1,
+        BitmapBlock,
+        BitmapExtensionBlock,
+        UserDirectoryBlock,
+        FileHeaderBlock,
+        FileExtensionBlock,
+        DataBlock,
     }
 }
